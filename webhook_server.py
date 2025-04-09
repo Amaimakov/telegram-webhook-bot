@@ -12,6 +12,7 @@ ASSIGNED_MAP = {
     "AZambylov": "604088724",
     "AKenzhebayev": "511448822",
     "AShutov": "462834861",
+    "MZhenis": "5871381787",
     "AIgilik": "275155417"
 }
 
