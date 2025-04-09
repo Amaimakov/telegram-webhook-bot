@@ -10,7 +10,9 @@ BOT_TOKEN = '7972885283:AAHWM_qsGypl1DqscOMF6y9ZhGDJlYuA3II'
 ASSIGNED_MAP = {
     "AMaimakov": "400623032",
     "AZambylov": "604088724",
-    "AKenzhebayev": "511448822"
+    "AKenzhebayev": "511448822",
+    "AShutov": "462834861",
+    "AIgilik": "275155417"
 }
 
 @app.route('/', methods=['GET'])
