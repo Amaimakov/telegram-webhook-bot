@@ -25,22 +25,16 @@ def notify():
     assigned = data.get('assigned', 'не указано')
 
     message = (
-        f"📦 *Новая заявка:*
-"
-        f"📅 *Дата:* {subject} {description}
-"
-        f"🆔 *Номер:* `{inc_number}`
-"
-        f"🏢 *Город:* {city}
-"
-        f"📍 *Офис:* {office}
-"
-        f"📄 *Тип:* {type_}
-"
-        f"👤 *Инициатор:* {initiator}
-"
-        f"👨‍🔧 *Назначено:* {assigned}"
-    )
+    f"📦 *Новая заявка:*\n"
+    f"📅 *Дата:* {subject} {description}\n"
+    f"🆔 *Номер:* `{inc_number}`\n"
+    f"🏢 *Город:* {city}\n"
+    f"📍 *Офис:* {office}\n"
+    f"📄 *Тип:* {type_}\n"
+    f"👤 *Инициатор:* {initiator}\n"
+    f"👨‍🔧 *Назначено:* {assigned}"
+)
+
 
     response = requests.post(
         f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage',
