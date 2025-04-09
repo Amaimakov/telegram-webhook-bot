@@ -13,7 +13,8 @@ ASSIGNED_MAP = {
     "AKenzhebayev": "511448822",
     "AShutov": "462834861",
     "MZhenis": "5871381787",
-    "AIgilik": "275155417"
+    "AIgilik": "275155417",
+    "ASAmangeldi": "6264174204"
 }
 
 @app.route('/', methods=['GET'])
