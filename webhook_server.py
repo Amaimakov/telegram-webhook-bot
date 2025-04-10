@@ -6,7 +6,6 @@ app = Flask(__name__)
 
 BOT_TOKEN = '7972885283:AAHWM_qsGypl1DqscOMF6y9ZhGDJlYuA3II'
 
-# Логины в ВЕРХНЕМ РЕГИСТРЕ
 ASSIGNED_MAP = {
     "AMAIMAKOV": "400623032",
     "AZAMBYLOV": "604088724",
@@ -24,10 +23,11 @@ def index():
 @app.route('/notify', methods=['POST'])
 def notify():
     print(">>> 📥 Пришёл запрос на /notify")
+    print(">> RAW JSON:", request.json)  # Отладочный вывод
 
     data = request.json
 
-    # ✅ Если это Telegram-сообщение с текстом /myid
+    # ✅ Обработка команды /myid от Telegram
     if 'message' in data:
         msg = data['message']
         chat = msg['chat']
@@ -57,13 +57,12 @@ def notify():
     initiator = data.get('initiator', 'не указан')
     assigned = data.get('assigned', 'не указан')
 
-    # 🔤 Приведение логина к верхнему регистру
+    # 🔤 Приведение логина к ВЕРХНЕМУ РЕГИСТРУ
     chat_id = ASSIGNED_MAP.get(assigned.strip().upper())
     if not chat_id:
         print(f"⛔️ Логин '{assigned}' не найден — заявка проигнорирована.")
         return {'status': 'skipped'}, 200
 
-    # ✉️ Формирование сообщения
     message = (
         f"📦 *Новая заявка:*\n"
         f"📅 *Дата:* {subject} {time}\n"
