@@ -7,14 +7,15 @@ app = Flask(__name__)
 BOT_TOKEN = '7972885283:AAHWM_qsGypl1DqscOMF6y9ZhGDJlYuA3II'
 
 # Фильтрация по назначенным логинам
+
 ASSIGNED_MAP = {
-    "AMaimakov": "400623032",
-    "AZambylov": "604088724",
-    "AKenzhebayev": "511448822",
-    "AShutov": "462834861",
-    "MZhenis": "5871381787",
-    "AIgilik": "275155417",
-    "ASAmangeldi": "6264174204"
+    "AMAIMAKOV": "400623032",
+    "AZAMBYLOV": "604088724",
+    "AKENZHEBAYEV": "511448822",
+    "ASHUTOV": "462834861",
+    "AIGILIK": "275155417",
+    "MZHENIS": "5871381787",
+    "ASAMANGELDI": "6264174204"
 }
 
 @app.route('/', methods=['GET'])
@@ -36,7 +37,7 @@ def notify():
     assigned = data.get('assigned', 'не указан')
 
     # 👤 Найдём chat_id по логину
-    chat_id = ASSIGNED_MAP.get(assigned)
+    chat_id = ASSIGNED_MAP.get(assigned.strip().upper())
     if not chat_id:
         print(f"⛔️ Логин '{assigned}' не найден — заявка проигнорирована.")
         return {'status': 'skipped'}, 200
