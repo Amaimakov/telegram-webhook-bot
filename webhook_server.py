@@ -12,7 +12,8 @@ ASSIGNED_MAP = {
     "AKENZHEBAYEV": "511448822",
     "ASHUTOV": "462834861",
     "AIGILIK": "275155417",
-    "MZHENIS": "5871381787"
+    "MZHENIS": "5871381787",
+    "DISHMAKIN": "111822101"
 }
 
 @app.route('/notify', methods=['POST'])
