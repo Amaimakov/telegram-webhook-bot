@@ -19,25 +19,27 @@ ASSIGNED_MAP = {
 def notify():
     data = request.get_json(force=True)
 
-    # Telegram команда /myid
+    # ✅ Обработка Telegram команды /myid
     if 'message' in data:
         msg = data['message']
         chat = msg.get('chat', {})
         user_id = chat.get('id')
+        first_name = chat.get('first_name', 'пользователь')
         text = msg.get('text', '')
 
         if text == '/myid':
+            print(f">> ПОЛУЧЕНА КОМАНДА /myid от {user_id}")
             requests.post(
                 f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
                 data={
                     "chat_id": user_id,
-                    "text": f"Ваш chat_id: `{user_id}`",
+                    "text": f"👋 Привет, {first_name}!\nТвой chat_id: `{user_id}`",
                     "parse_mode": "Markdown"
                 }
             )
             return {'status': 'myid sent'}, 200
 
-    # Обработка заявки
+    # 🧾 Обработка заявок
     subject = data.get('created', '')
     time = data.get('time', '')
     inc_number = data.get('inc_number', '')
