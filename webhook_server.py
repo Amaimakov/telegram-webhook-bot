@@ -1,4 +1,4 @@
-from flask import Flask, request, abort
+from flask import Flask, request
 import requests
 import os
 
@@ -12,8 +12,7 @@ ASSIGNED_MAP = {
     "AKENZHEBAYEV": "511448822",
     "ASHUTOV": "462834861",
     "AIGILIK": "275155417",
-    "MZHENIS": "5871381787",
-    "ASAMANGELDI": "6264174204"
+    "MZHENIS": "5871381787"
 }
 
 @app.route('/', methods=['GET'])
@@ -23,7 +22,11 @@ def index():
 @app.route('/notify', methods=['POST'])
 def notify():
     print(">>> 📥 Пришёл запрос на /notify")
-    print(">> RAW JSON:", request.json)  # Отладочный вывод
+    
+    try:
+        print(">> RAW JSON:", request.json)
+    except Exception as e:
+        print("⚠️ Ошибка при выводе JSON:", e)
 
     data = request.json
 
@@ -57,7 +60,6 @@ def notify():
     initiator = data.get('initiator', 'не указан')
     assigned = data.get('assigned', 'не указан')
 
-    # 🔤 Приведение логина к ВЕРХНЕМУ РЕГИСТРУ
     chat_id = ASSIGNED_MAP.get(assigned.strip().upper())
     if not chat_id:
         print(f"⛔️ Логин '{assigned}' не найден — заявка проигнорирована.")
