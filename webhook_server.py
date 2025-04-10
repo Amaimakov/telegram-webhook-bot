@@ -24,13 +24,16 @@ def index():
 def notify():
     print(">>> 📥 Пришёл запрос на /notify")
 
-    # 🔍 Попробуем получить JSON и отловить ошибки
     try:
         data = request.get_json(force=True)
-        print(">> RAW JSON:", data)
+        if data is None:
+            print("⚠️ request.get_json вернул None")
+            return {'status': 'invalid json'}, 400
+        else:
+            print(">> RAW JSON:", data)
     except Exception as e:
-        print("⚠️ Ошибка при чтении JSON:", e)
-        return {'status': 'error', 'message': str(e)}, 400
+        print("⚠️ Исключение при получении JSON:", e)
+        return {'status': 'json error'}, 400
 
     # ✅ Если это команда от Telegram
     if 'message' in data:
