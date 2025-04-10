@@ -6,6 +6,7 @@ app = Flask(__name__)
 
 BOT_TOKEN = '7972885283:AAHWM_qsGypl1DqscOMF6y9ZhGDJlYuA3II'
 
+# Список назначенных логинов (в ВЕРХНЕМ регистре)
 ASSIGNED_MAP = {
     "AMAIMAKOV": "400623032",
     "AZAMBYLOV": "604088724",
@@ -22,19 +23,20 @@ def index():
 @app.route('/notify', methods=['POST'])
 def notify():
     print(">>> 📥 Пришёл запрос на /notify")
-    
+
+    # 🔍 Попробуем получить JSON и отловить ошибки
     try:
-        print(">> RAW JSON:", request.json)
+        data = request.get_json(force=True)
+        print(">> RAW JSON:", data)
     except Exception as e:
-        print("⚠️ Ошибка при выводе JSON:", e)
+        print("⚠️ Ошибка при чтении JSON:", e)
+        return {'status': 'error', 'message': str(e)}, 400
 
-    data = request.json
-
-    # ✅ Обработка команды /myid от Telegram
+    # ✅ Если это команда от Telegram
     if 'message' in data:
         msg = data['message']
-        chat = msg['chat']
-        user_id = chat['id']
+        chat = msg.get('chat', {})
+        user_id = chat.get('id')
         first_name = chat.get('first_name', 'пользователь')
         text = msg.get('text', '')
 
@@ -50,7 +52,7 @@ def notify():
             print(f">> 📤 Отправлен chat_id пользователю {user_id}")
             return {'status': 'myid sent'}, 200
 
-    # 🧾 Обработка заявки от Service Desk
+    # 🧾 Если это заявка от Service Desk
     subject = data.get('created', 'Без даты')
     time = data.get('time', '')
     inc_number = data.get('inc_number', 'не указан')
@@ -60,11 +62,13 @@ def notify():
     initiator = data.get('initiator', 'не указан')
     assigned = data.get('assigned', 'не указан')
 
+    # 🔠 Поиск логина без учёта регистра
     chat_id = ASSIGNED_MAP.get(assigned.strip().upper())
     if not chat_id:
         print(f"⛔️ Логин '{assigned}' не найден — заявка проигнорирована.")
         return {'status': 'skipped'}, 200
 
+    # 💬 Формирование сообщения
     message = (
         f"📦 *Новая заявка:*\n"
         f"📅 *Дата:* {subject} {time}\n"
