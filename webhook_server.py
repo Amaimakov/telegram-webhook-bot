@@ -19,21 +19,25 @@ ASSIGNED_MAP = {
 def notify():
     print(">>> 📥 Пришёл запрос на /notify")
     
-    # Логируем сырые данные запроса
-    print(">> RAW JSON:", request.get_data(as_text=True))
+    try:
+        raw = request.get_data(as_text=True)
+        print(">> RAW JSON:", raw)
+        data = request.get_json(force=True)
+    except Exception as e:
+        print("⚠️ Ошибка чтения JSON:", e)
+        return {'status': 'error', 'message': str(e)}, 400
 
-    data = request.get_json(force=True)
-
-    # ✅ Обработка команды /myid от Telegram
-    if 'message' in data:
+    # ✅ Если это Telegram-команда /myid
+    if isinstance(data, dict) and 'message' in data:
         msg = data['message']
         chat = msg.get('chat', {})
         user_id = chat.get('id')
         first_name = chat.get('first_name', 'пользователь')
         text = msg.get('text', '')
 
-        if text == '/myid':
-            print(f">> ПОЛУЧЕНА КОМАНДА /myid от {user_id}")
+        print(f">> Проверка команды: {text}")
+        if text.strip() == '/myid':
+            print(f">> 📤 Отправляю chat_id пользователю {user_id}")
             requests.post(
                 f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
                 data={
@@ -44,7 +48,7 @@ def notify():
             )
             return {'status': 'myid sent'}, 200
 
-    # 🧾 Обработка заявки
+    # 🧾 Если это заявка от внешней системы
     subject = data.get('created', '')
     time = data.get('time', '')
     inc_number = data.get('inc_number', '')
@@ -56,6 +60,7 @@ def notify():
 
     chat_id = ASSIGNED_MAP.get(assigned.strip().upper())
     if not chat_id:
+        print(f"⛔️ Логин '{assigned}' не найден — заявка пропущена")
         return {'status': 'skipped'}, 200
 
     message = (
@@ -69,8 +74,10 @@ def notify():
         f"👨‍🔧 *Назначено:* {assigned}"
     )
 
+    print(f">> ✅ Отправляем заявку {inc_number} для {assigned} ({chat_id})")
+
     requests.post(
-        f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage',
+        f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
         data={
             'chat_id': chat_id,
             'text': message,
