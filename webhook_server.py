@@ -6,6 +6,7 @@ app = Flask(__name__)
 
 BOT_TOKEN = '7972885283:AAHWM_qsGypl1DqscOMF6y9ZhGDJlYuA3II'
 
+# Логины в ВЕРХНЕМ РЕГИСТРЕ
 ASSIGNED_MAP = {
     "AMAIMAKOV": "400623032",
     "AZAMBYLOV": "604088724",
@@ -26,25 +27,27 @@ def notify():
 
     data = request.json
 
-    # Проверка команды /myid
-    if 'message' in data and data['message'].get('text') == '/myid':
-        chat = data['message']['chat']
+    # ✅ Если это Telegram-сообщение с текстом /myid
+    if 'message' in data:
+        msg = data['message']
+        chat = msg['chat']
         user_id = chat['id']
         first_name = chat.get('first_name', 'пользователь')
+        text = msg.get('text', '')
 
-        response = requests.post(
-            f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
-            data={
-                "chat_id": user_id,
-                "text": f"👋 Привет, {first_name}!\nТвой chat_id: `{user_id}`",
-                "parse_mode": "Markdown"
-            }
-        )
+        if text == '/myid':
+            requests.post(
+                f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
+                data={
+                    "chat_id": user_id,
+                    "text": f"👋 Привет, {first_name}!\nТвой chat_id: `{user_id}`",
+                    "parse_mode": "Markdown"
+                }
+            )
+            print(f">> 📤 Отправлен chat_id пользователю {user_id}")
+            return {'status': 'myid sent'}, 200
 
-        print(f">> 📤 Отправлен chat_id пользователю {user_id}")
-        return {'status': 'myid sent'}, 200
-
-    # Обработка заявки (если это не /myid)
+    # 🧾 Обработка заявки от Service Desk
     subject = data.get('created', 'Без даты')
     time = data.get('time', '')
     inc_number = data.get('inc_number', 'не указан')
@@ -54,11 +57,13 @@ def notify():
     initiator = data.get('initiator', 'не указан')
     assigned = data.get('assigned', 'не указан')
 
+    # 🔤 Приведение логина к верхнему регистру
     chat_id = ASSIGNED_MAP.get(assigned.strip().upper())
     if not chat_id:
         print(f"⛔️ Логин '{assigned}' не найден — заявка проигнорирована.")
         return {'status': 'skipped'}, 200
 
+    # ✉️ Формирование сообщения
     message = (
         f"📦 *Новая заявка:*\n"
         f"📅 *Дата:* {subject} {time}\n"
