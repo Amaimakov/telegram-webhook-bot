@@ -17,9 +17,14 @@ ASSIGNED_MAP = {
 
 @app.route('/notify', methods=['POST'])
 def notify():
+    print(">>> 📥 Пришёл запрос на /notify")
+    
+    # Логируем сырые данные запроса
+    print(">> RAW JSON:", request.get_data(as_text=True))
+
     data = request.get_json(force=True)
 
-    # ✅ Обработка Telegram команды /myid
+    # ✅ Обработка команды /myid от Telegram
     if 'message' in data:
         msg = data['message']
         chat = msg.get('chat', {})
@@ -39,7 +44,7 @@ def notify():
             )
             return {'status': 'myid sent'}, 200
 
-    # 🧾 Обработка заявок
+    # 🧾 Обработка заявки
     subject = data.get('created', '')
     time = data.get('time', '')
     inc_number = data.get('inc_number', '')
